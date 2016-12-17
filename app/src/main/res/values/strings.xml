@@ -10,4 +10,8 @@
     <string name="base_image_url">http://image.tmdb.org/t/p/w185/</string>
 
     <string name="cashed_movies_list">cashedMoviesList</string>
+
+    <string name="popular">popular</string>
+
+    <string name="top_rated">top_rated</string>
 </resources>

@@ -16,10 +16,10 @@ import udacity.nanodegree.android.popularmovies.rest.ApiInterface;
 
 public class ApiRequests {
 
-    public static Observable<MoviesResponse> getTopRatedObservable(Context context){
+    public static Observable<MoviesResponse> getMoviesObservable(Context context, String moviesType){
         return ApiClient.getClient()
                 .create(ApiInterface.class)
-                .getTopRatedMovies(context.getString(R.string.api_key))
+                .getMovies(moviesType,context.getString(R.string.api_key))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());
     }

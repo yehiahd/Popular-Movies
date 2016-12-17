@@ -45,7 +45,7 @@ public class MainFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this,view);
 
-        if (!Connection.isNetworkAvailable(getActivity())){
+        if (!Connection.isNetworkAvailable(getActivity()) && savedInstanceState == null){
             showView(noInternetLayout);
             hideView(progressBar);
         }
@@ -77,7 +77,7 @@ public class MainFragment extends BaseFragment {
     }
 
     private void createObservables() {
-        ApiRequests.getTopRatedObservable(getActivity())
+        ApiRequests.getMoviesObservable(getActivity(), getString(R.string.top_rated))
                 .compose(bindToLifecycle())
                 .subscribe(moviesResponse -> {
                     moviesList = (ArrayList<Movie>) moviesResponse.getResults();
