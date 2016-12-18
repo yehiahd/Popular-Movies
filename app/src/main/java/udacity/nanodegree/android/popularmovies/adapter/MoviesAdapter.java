@@ -80,6 +80,8 @@ public class MoviesAdapter extends BaseAdapter {
         Picasso.with(mContext)
                 .load(mContext.getString(R.string.base_image_url)+list.get(position).getPosterPath())
                 .resize(width/2,height/2)
+                .placeholder(R.drawable.progress_placeholder)
+                .error(R.drawable.error)
                 .into(holder.movieImageView);
 
         return view;

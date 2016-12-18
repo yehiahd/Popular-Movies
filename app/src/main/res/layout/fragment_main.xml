@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAppearance="?android:textAppearanceLarge"
-            android:text="No Internet Connection"/>
+            android:text="@string/no_internet_connection"/>
 
         <Button
             android:id="@+id/retry_to_connect"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            android:text="retry"/>
+            android:text="@string/retry"/>
 
     </LinearLayout>
 

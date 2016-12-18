@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_details"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="udacity.nanodegree.android.popularmovies.controller.activity.MainActivity">
+    tools:context="udacity.nanodegree.android.popularmovies.controller.activity.DetailsActivity">
 
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="udacity.nanodegree.android.popularmovies.controller.fragment.MainFragment"
-        android:id="@+id/main_fragment" />
+        android:name="udacity.nanodegree.android.popularmovies.controller.fragment.DetailsFragment"
+        android:id="@+id/detail_fragment" />
 </RelativeLayout>

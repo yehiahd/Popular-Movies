@@ -6,14 +6,11 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import udacity.nanodegree.android.popularmovies.R;
 
-public class MainActivity extends RxAppCompatActivity {
+public class DetailsActivity extends RxAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_details);
     }
-
-
 }
