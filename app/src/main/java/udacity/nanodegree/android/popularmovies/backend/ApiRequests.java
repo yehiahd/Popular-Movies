@@ -2,6 +2,8 @@ package udacity.nanodegree.android.popularmovies.backend;
 
 import android.content.Context;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -21,6 +23,7 @@ public class ApiRequests {
                 .create(ApiInterface.class)
                 .getMovies(moviesType,context.getString(R.string.api_key))
                 .subscribeOn(Schedulers.newThread())
+                .timeout(15, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }
