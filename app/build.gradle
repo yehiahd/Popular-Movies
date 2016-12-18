@@ -45,6 +45,7 @@ dependencies {
     compile 'com.trello:rxlifecycle-android:1.0'
     compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.f2prateek.rx.receivers:rx-receivers:0.1.0'
+    compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.2'
     // butter knife
     compile 'com.jakewharton:butterknife:7.0.1'
     // gson
