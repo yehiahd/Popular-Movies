@@ -82,6 +82,7 @@ public class MovieExtraFragment extends BaseFragment {
 
     private void getReviews(Integer id) {
         ApiRequests.getMovieReviewObservable(getActivity(),String.valueOf(id))
+                .compose(bindToLifecycle())
                 .subscribe(reviewResponse -> {
                     adapter = new MovieExtraAdapter(getActivity(),reviewResponse.getReviews(), new ArrayList<>(),getString(R.string.reviews));
                     movieExtraRecycler.setAdapter(adapter);
@@ -96,6 +97,7 @@ public class MovieExtraFragment extends BaseFragment {
 
     private void getTrailers(Integer id) {
         ApiRequests.getMovieTrailerObservable(getActivity(), String.valueOf(id))
+                .compose(bindToLifecycle())
                 .subscribe(trailerResponse -> {
                     adapter = new MovieExtraAdapter(getActivity(), new ArrayList<>(),trailerResponse.getTrailers(),getString(R.string.trailers));
                     movieExtraRecycler.setAdapter(adapter);
