@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            card_view:cardElevation="@dimen/spacing_xsmall"
+            card_view:cardElevation="@dimen/spacing_xSmall"
             card_view:cardUseCompatPadding="true">
 
             <LinearLayout

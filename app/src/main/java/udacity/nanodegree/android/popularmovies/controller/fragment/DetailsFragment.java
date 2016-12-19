@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,10 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.favorite_fab) FloatingActionButton fab;
+    @Bind(R.id.trailers_button) Button trailersButton;
+    @Bind(R.id.reviews_button) Button reviewsButton;
+
+    private int movieID;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -59,6 +64,9 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
     private void initializeContent() {
         fab.setOnClickListener(this);
+        trailersButton.setOnClickListener(this);
+        reviewsButton.setOnClickListener(this);
+
         ((AppCompatActivity) getActivity()).supportPostponeEnterTransition();
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,8 +92,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
             movieDescription.setText(movie.getOverview() + movie.getOverview() + movie.getOverview() + movie.getOverview());
 
-            getTrailers(movie.getId());
-            getReviews(movie.getId());
+            movieID = movie.getId();
 
         }
 
@@ -114,6 +121,14 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         switch (view.getId()){
             case R.id.favorite_fab:
                 Toast.makeText(getActivity(), "fab Clicked ! Wait for favorites", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.reviews_button:
+                getReviews(movieID);
+                break;
+
+            case R.id.trailers_button:
+                getTrailers(movieID);
                 break;
         }
     }
