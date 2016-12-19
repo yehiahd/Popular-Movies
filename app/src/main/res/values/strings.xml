@@ -34,7 +34,8 @@
     <string name="top_rated_summary">Top Rated</string>
 
     <string name="base_trailer_url">https://www.youtube.com/watch?v=</string>
-
+    <string name="splitter">-</string>
+    <string name="divideByTen">/10</string>
 
 
 </resources>

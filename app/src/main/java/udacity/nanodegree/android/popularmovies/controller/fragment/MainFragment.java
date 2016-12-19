@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -129,6 +130,11 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
                     moviesList = (ArrayList<Movie>) moviesResponse.getResults();
                     adapter.updateMoviesList(moviesResponse.getResults());
                     hideView(progressBar);
+                },throwable -> {
+                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    hideView(progressBar);
+                    hideView(moviesGridView);
+                    showView(noInternetLayout);
                 });
     }
 

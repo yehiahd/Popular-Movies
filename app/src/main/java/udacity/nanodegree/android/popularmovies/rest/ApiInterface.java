@@ -5,6 +5,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 import udacity.nanodegree.android.popularmovies.model.MoviesResponse;
+import udacity.nanodegree.android.popularmovies.model.ReviewResponse;
+import udacity.nanodegree.android.popularmovies.model.TrailerResponse;
 
 /**
  * Created by yehia on 17/12/16.
@@ -16,9 +18,9 @@ public interface ApiInterface {
     Observable<MoviesResponse> getMovies(@Path("type") String moviesType, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
-    Observable<MoviesResponse> getMovieReview(@Path("id") String id, @Query("api_key") String apiKey );
+    Observable<ReviewResponse> getMovieReview(@Path("id") String id, @Query("api_key") String apiKey );
 
     @GET("movie/{id}/videos")
-    Observable<MoviesResponse> getMovieTrailer(@Path("id") String id, @Query("api_key") String apiKey );
+    Observable<TrailerResponse> getMovieTrailer(@Path("id") String id, @Query("api_key") String apiKey );
 
 }

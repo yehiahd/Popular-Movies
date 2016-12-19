@@ -29,6 +29,9 @@ public class DetailsActivity extends RxAppCompatActivity {
             case R.id.settings_menu_item:
                 startActivity(new Intent(this, SettingActivity.class));
                 return true;
+            case android.R.id.home:
+                this.finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
