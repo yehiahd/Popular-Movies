@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,15 +29,17 @@ import rx.schedulers.Schedulers;
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.adapter.MoviesAdapter;
 import udacity.nanodegree.android.popularmovies.backend.ApiRequests;
+import udacity.nanodegree.android.popularmovies.callback.RecyclerClickListener;
 import udacity.nanodegree.android.popularmovies.controller.activity.DetailsActivity;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 import udacity.nanodegree.android.popularmovies.util.Connection;
+import udacity.nanodegree.android.popularmovies.util.RecyclerTouchListener;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class MainFragment extends BaseFragment implements View.OnClickListener {
 
     @Bind(R.id.progress_bar) ProgressBar progressBar;
     @Bind(R.id.no_internet_connection_layout) LinearLayout noInternetLayout;
@@ -130,6 +131,19 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
         moviesRecycler.setItemAnimator(new DefaultItemAnimator());
         moviesRecycler.setAdapter(adapter);
 
+        moviesRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), moviesRecycler, new RecyclerClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                startActivity(new Intent(getActivity(), DetailsActivity.class).putExtra(getString(R.string.movie_extra),moviesList.get(position)));
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                moviesList.remove(position);
+                adapter.updateMoviesList(moviesList);
+            }
+        }));
+
     }
 
     private void fetchMovies(String fetchType) {
@@ -152,11 +166,6 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(getString(R.string.cashed_movies_list), moviesList);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        startActivity(new Intent(getActivity(), DetailsActivity.class).putExtra(getString(R.string.movie_extra),moviesList.get(position)));
     }
 
     @Override
