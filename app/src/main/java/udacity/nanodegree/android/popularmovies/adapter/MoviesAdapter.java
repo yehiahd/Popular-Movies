@@ -1,89 +1,74 @@
 package udacity.nanodegree.android.popularmovies.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 
 /**
- * Created by yehia on 12/12/16.
+ * Created by yehia on 19/12/16.
  */
 
-public class MoviesAdapter extends BaseAdapter {
+public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
-    private ArrayList<Movie> list;
+    private List<Movie> moviesList;
     private Context mContext;
     private int width,height;
 
-    public MoviesAdapter(List<Movie> list, Context context) {
-        this.list = new ArrayList<>(list);
+    public MoviesAdapter(List<Movie> moviesList, Context context) {
+        this.moviesList = moviesList;
         this.mContext = context;
         this.width = context.getResources().getDisplayMetrics().widthPixels;
         this.height = context.getResources().getDisplayMetrics().heightPixels;
     }
 
-    @Override
-    public int getCount() {
-        return list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
 
     public void updateMoviesList(List<Movie> newList) {
-        list.clear();
-        list.addAll(newList);
+        moviesList.clear();
+        moviesList.addAll(newList);
         this.notifyDataSetChanged();
     }
 
-    class ViewHolder{
+    @Override
+    public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.movie_row,parent,false);
 
-        private ImageView movieImageView;
-
-        public ViewHolder(View view){
-            movieImageView = (ImageView) view.findViewById(R.id.movie_image);
-        }
+        return new MovieViewHolder(view);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder holder = null;
-
-        if (view == null){
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.movie_row,parent,false);
-            holder = new ViewHolder(view);
-            view.setTag(holder);
-        }
-
-        else
-            holder = (ViewHolder) view.getTag();
-
+    public void onBindViewHolder(MovieViewHolder holder, int position) {
+        Movie movie = moviesList.get(position);
         Picasso.with(mContext)
-                .load(mContext.getString(R.string.base_image_url)+list.get(position).getPosterPath())
+                .load(mContext.getString(R.string.base_image_url)+movie.getPosterPath())
                 .resize(width/2,height/2)
                 .placeholder(R.drawable.progress_placeholder)
                 .error(R.drawable.error)
-                .into(holder.movieImageView);
+                .into(holder.movieImage);
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        return moviesList.size();
+    }
+
+    public class MovieViewHolder extends RecyclerView.ViewHolder{
+
+        private ImageView movieImage;
+
+        public MovieViewHolder(View itemView) {
+            super(itemView);
+            movieImage = (ImageView) itemView.findViewById(R.id.movie_image);
+        }
     }
 }

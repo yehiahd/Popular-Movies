@@ -4,14 +4,20 @@
     android:layout_height="match_parent"
     tools:context="udacity.nanodegree.android.popularmovies.controller.fragment.MainFragment">
 
-    <GridView
-        android:id="@+id/movies_grid"
+    <!--<GridView-->
+        <!--android:id="@+id/movies_grid"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:verticalSpacing="0dp"-->
+        <!--android:horizontalSpacing="0dp"-->
+        <!--android:stretchMode="columnWidth"-->
+        <!--android:numColumns="2"/>-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/movies_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp"
-        android:stretchMode="columnWidth"
-        android:numColumns="2"/>
+        android:scrollbars="vertical" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

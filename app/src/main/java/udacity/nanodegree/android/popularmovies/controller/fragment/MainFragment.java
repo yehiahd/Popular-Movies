@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -38,13 +40,15 @@ import udacity.nanodegree.android.popularmovies.util.Connection;
  */
 public class MainFragment extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
-    @Bind(R.id.movies_grid) GridView moviesGridView;
     @Bind(R.id.progress_bar) ProgressBar progressBar;
     @Bind(R.id.no_internet_connection_layout) LinearLayout noInternetLayout;
     @Bind(R.id.retry_to_connect) Button retryButton;
+    @Bind(R.id.movies_recycler) RecyclerView moviesRecycler;
     private MoviesAdapter adapter;
     private ArrayList<Movie> moviesList;
     private String oldPref;
+    public static final int NUMBER_OF_ROW_ITEMS = 2;
+
 
     public MainFragment() {
         // Required empty public constructor
@@ -71,7 +75,7 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
 
             if (savedInstanceState != null){
                 moviesList = savedInstanceState.getParcelableArrayList(getString(R.string.cashed_movies_list));
-                adapter.updateMoviesList(moviesList);
+
                 hideView(progressBar);
             }
         }
@@ -106,7 +110,7 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
                                 fetchMovies(oldPref);
                             else {
                                 showView(noInternetLayout);
-                                hideView(moviesGridView);
+                                hideView(moviesRecycler);
                             }
                         }
 
@@ -117,10 +121,15 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
     private void initializeContent() {
         hideView(noInternetLayout);
         showView(progressBar);
+
         moviesList = new ArrayList<>();
         adapter = new MoviesAdapter(moviesList,getActivity());
-        moviesGridView.setAdapter(adapter);
-        moviesGridView.setOnItemClickListener(this);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(),NUMBER_OF_ROW_ITEMS);
+        moviesRecycler.setLayoutManager(mLayoutManager);
+        moviesRecycler.setItemAnimator(new DefaultItemAnimator());
+        moviesRecycler.setAdapter(adapter);
+
     }
 
     private void fetchMovies(String fetchType) {
@@ -133,7 +142,7 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
                 },throwable -> {
                     Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     hideView(progressBar);
-                    hideView(moviesGridView);
+                    hideView(moviesRecycler);
                     showView(noInternetLayout);
                 });
     }
@@ -157,7 +166,7 @@ public class MainFragment extends BaseFragment implements AdapterView.OnItemClic
                 if (Connection.isNetworkAvailable(getActivity())){
                     initializeContent();
                     fetchMovies(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.sort_by_key),getString(R.string.top_rated)));
-                    showView(moviesGridView);
+                    showView(moviesRecycler);
                 }
                 break;
         }
