@@ -18,9 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.activity.DetailsActivity"
-            android:theme="@style/detailStyle"/>
-        <activity android:name=".controller.activity.SettingActivity"/>
+        <activity
+            android:name=".controller.activity.DetailsActivity"
+            android:theme="@style/detailStyle" />
+        <activity android:name=".controller.activity.SettingActivity" />
+        <activity android:name=".controller.activity.MovieExtraActivity"></activity>
     </application>
 
 </manifest>

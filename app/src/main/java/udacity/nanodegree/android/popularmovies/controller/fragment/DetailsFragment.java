@@ -1,6 +1,7 @@
 package udacity.nanodegree.android.popularmovies.controller.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +21,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import udacity.nanodegree.android.popularmovies.R;
-import udacity.nanodegree.android.popularmovies.backend.ApiRequests;
+import udacity.nanodegree.android.popularmovies.controller.activity.MovieExtraActivity;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 
 /**
@@ -98,23 +99,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
     }
 
-    private void getReviews(Integer id) {
-        ApiRequests.getMovieReviewObservable(getActivity(),String.valueOf(id))
-                .subscribe(reviewResponse -> {
-                    Toast.makeText(getActivity(), reviewResponse.getReviews().get(0).getContent(), Toast.LENGTH_SHORT).show();
-                },throwable -> {
-                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
 
-    private void getTrailers(Integer id) {
-        ApiRequests.getMovieTrailerObservable(getActivity(), String.valueOf(id))
-                .subscribe(trailerResponse -> {
-                    Toast.makeText(getActivity(), trailerResponse.getTrailers().get(0).getKey(), Toast.LENGTH_SHORT).show();
-                },throwable -> {
-                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
 
     @Override
     public void onClick(View view) {
@@ -124,11 +109,17 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
                 break;
 
             case R.id.reviews_button:
-                getReviews(movieID);
+                startActivity(new Intent(getActivity(), MovieExtraActivity.class)
+                        .putExtra(getString(R.string.id),movieID)
+                        .putExtra(getString(R.string.request_type),getString(R.string.reviews))
+                );
                 break;
 
             case R.id.trailers_button:
-                getTrailers(movieID);
+                startActivity(new Intent(getActivity(), MovieExtraActivity.class)
+                .putExtra(getString(R.string.id),movieID)
+                .putExtra(getString(R.string.request_type),getString(R.string.trailers))
+                );
                 break;
         }
     }
