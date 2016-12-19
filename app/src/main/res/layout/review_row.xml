@@ -6,11 +6,18 @@
     <TextView
         android:id="@+id/author_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_margin="@dimen/spacing_medium"/>
 
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="@dimen/spacing_large"
+        android:layout_marginRight="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_xSmall"/>
 
 </LinearLayout>
