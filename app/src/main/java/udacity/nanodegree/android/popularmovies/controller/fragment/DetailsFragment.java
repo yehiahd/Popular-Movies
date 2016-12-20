@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.controller.activity.MovieExtraActivity;
+import udacity.nanodegree.android.popularmovies.database.DatabaseHelper;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 
 /**
@@ -41,6 +43,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     @Bind(R.id.reviews_button) Button reviewsButton;
 
     private int movieID;
+    private Movie mMovie;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -78,6 +81,8 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
 
         Movie movie = getActivity().getIntent().getExtras().getParcelable(getString(R.string.movie_extra));
+        this.mMovie = movie;
+
         if (movie != null) {
             Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getBackdropPath())
                     .placeholder(R.drawable.progress_placeholder).error(R.drawable.error).into(movieCover);
@@ -106,6 +111,8 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         switch (view.getId()){
             case R.id.favorite_fab:
                 Toast.makeText(getActivity(), "fab Clicked ! Wait for favorites", Toast.LENGTH_SHORT).show();
+                long tmp=DatabaseHelper.getInstance(getActivity()).addMovie(mMovie);
+                Log.d("idInserted",tmp+"");
                 break;
 
             case R.id.reviews_button:
