@@ -78,10 +78,13 @@ public class MovieExtraFragment extends BaseFragment {
 
         if (requestType.equals(getString(R.string.reviews))){
             getReviews(movieID);
+            getActivity().setTitle(getString(R.string.reviews));
         }
 
         else if (requestType.equals(getString(R.string.trailers))){
             getTrailers(movieID);
+            getActivity().setTitle(getString(R.string.reviews));
+
             movieExtraRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), movieExtraRecycler, new RecyclerClickListener() {
                 @Override
                 public void onClick(View view, int position) {
