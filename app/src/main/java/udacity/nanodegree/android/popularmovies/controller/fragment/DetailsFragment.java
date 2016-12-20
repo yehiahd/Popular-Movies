@@ -25,11 +25,12 @@ import udacity.nanodegree.android.popularmovies.controller.activity.MovieExtraAc
 import udacity.nanodegree.android.popularmovies.database.DBConnection;
 import udacity.nanodegree.android.popularmovies.database.DatabaseHelper;
 import udacity.nanodegree.android.popularmovies.model.Movie;
+import udacity.nanodegree.android.popularmovies.util.Screen;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailsFragment extends BaseFragment implements View.OnClickListener {
+public class DetailsFragment extends Fragment implements View.OnClickListener {
 
     @Bind(R.id.movie_cover) ImageView movieCover;
     @Bind(R.id.movie_image) ImageView movieImage;
@@ -62,7 +63,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
         initializeContent();
 
-        if (getActivity().getIntent() !=null){
+        if (getActivity().getIntent() !=null && !Screen.isTablet(getActivity())){
             populateDetailsFromIntent();
         }
         return view;
@@ -74,39 +75,62 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         trailersButton.setOnClickListener(this);
         reviewsButton.setOnClickListener(this);
 
-        ((AppCompatActivity) getActivity()).supportPostponeEnterTransition();
+
+        getActivity().supportPostponeEnterTransition();
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (!Screen.isTablet(getActivity())){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
     }
 
     private void populateDetailsFromIntent() {
 
+        rootLayout.setVisibility(View.VISIBLE);
         Movie movie = getActivity().getIntent().getExtras().getParcelable(getString(R.string.movie_extra));
         this.mMovie = movie;
+
+        if (movie != null) {
+
+            populateDetails(movie);
+        }
+
+    }
+
+    public void populateDetailsForTablet(Movie movie){
+        this.mMovie = movie;
+        rootLayout.setVisibility(View.VISIBLE);
+        populateDetails(movie);
+    }
+
+
+    public void populateDetails(Movie movie){
 
         if (databaseReference.isFavorite(movie.getId())){
             fab.setImageResource(R.mipmap.marked);
         }
 
-        if (movie != null) {
-            Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getBackdropPath())
-                    .placeholder(R.drawable.progress_placeholder).error(R.drawable.error).into(movieCover);
-
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(movie.getTitle());
-
-            Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getPosterPath())
-                    .placeholder(R.drawable.progress_placeholder).error(R.drawable.error).into(movieImage);
-
-            movieDate.setText((movie.getReleaseDate().split(getString(R.string.splitter)))[0]);
-
-            movieVoteAverage.setText(String.valueOf(movie.getVoteAverage())+getString(R.string.divideByTen));
-
-            movieDescription.setText(movie.getOverview() + movie.getOverview() + movie.getOverview() + movie.getOverview());
-
-            movieID = movie.getId();
-
+        else {
+            fab.setImageResource(R.mipmap.not_marked);
         }
 
+        Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getBackdropPath())
+                .placeholder(R.drawable.progress_placeholder).error(R.drawable.error).into(movieCover);
+
+        collapsingToolbarLayout.setTitle(movie.getTitle());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(movie.getTitle());
+
+        Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getPosterPath())
+                .placeholder(R.drawable.progress_placeholder).error(R.drawable.error).into(movieImage);
+
+        movieDate.setText((movie.getReleaseDate().split(getString(R.string.splitter)))[0]);
+
+        movieVoteAverage.setText(String.valueOf(movie.getVoteAverage())+getString(R.string.divideByTen));
+
+        movieDescription.setText(movie.getOverview() + movie.getOverview() + movie.getOverview() + movie.getOverview());
+
+        movieID = movie.getId();
     }
 
 

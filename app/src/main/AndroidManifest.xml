@@ -19,8 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.activity.DetailsActivity"
-            android:theme="@style/detailStyle" />
+            android:name=".controller.activity.DetailsActivity" />
         <activity android:name=".controller.activity.SettingActivity" />
         <activity android:name=".controller.activity.MovieExtraActivity"
             android:theme="@style/Base.Theme.AppCompat.Dialog"/>

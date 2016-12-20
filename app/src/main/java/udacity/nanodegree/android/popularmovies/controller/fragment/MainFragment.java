@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import rx.schedulers.Schedulers;
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.adapter.MoviesAdapter;
 import udacity.nanodegree.android.popularmovies.backend.ApiRequests;
+import udacity.nanodegree.android.popularmovies.callback.Communicator;
 import udacity.nanodegree.android.popularmovies.callback.RecyclerClickListener;
 import udacity.nanodegree.android.popularmovies.controller.activity.DetailsActivity;
 import udacity.nanodegree.android.popularmovies.database.DBConnection;
@@ -37,6 +40,7 @@ import udacity.nanodegree.android.popularmovies.database.DatabaseHelper;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 import udacity.nanodegree.android.popularmovies.util.Connection;
 import udacity.nanodegree.android.popularmovies.util.RecyclerTouchListener;
+import udacity.nanodegree.android.popularmovies.util.Screen;
 
 
 /**
@@ -48,14 +52,18 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     @Bind(R.id.no_internet_connection_layout) LinearLayout noInternetLayout;
     @Bind(R.id.retry_to_connect) Button retryButton;
     @Bind(R.id.movies_recycler) RecyclerView moviesRecycler;
+    @Bind(R.id.toolbar) Toolbar toolbar;
     private MoviesAdapter adapter;
     private ArrayList<Movie> moviesList;
     private String oldPref;
-    public static final int NUMBER_OF_ROW_ITEMS = 2;
+    public static final int NUMBER_OF_ROW_ITEMS_PHONE = 2;
+    public static final int NUMBER_OF_ROW_ITEMS_TABLET = 3;
+    private static final int FIRST_MOVIE = 0;
 
     private DBConnection databaseReference;
     private SharedPreferences preferences ;
     private String tempPref;
+    private Communicator communicator;
 
 
     public MainFragment() {
@@ -94,6 +102,13 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
 
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        communicator = (Communicator) getActivity();
+
     }
 
     private void getPref() {
@@ -162,11 +177,18 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         hideView(noInternetLayout);
         showView(progressBar);
 
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
         databaseReference = DatabaseHelper.getInstance(getActivity());
         moviesList = new ArrayList<>();
         adapter = new MoviesAdapter(moviesList,getActivity());
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(),NUMBER_OF_ROW_ITEMS);
+        RecyclerView.LayoutManager mLayoutManager;
+        if (Screen.isTablet(getActivity())){
+            mLayoutManager = new GridLayoutManager(getActivity(),NUMBER_OF_ROW_ITEMS_TABLET);
+        }
+        else {
+            mLayoutManager = new GridLayoutManager(getActivity(),NUMBER_OF_ROW_ITEMS_PHONE);
+        }
         moviesRecycler.setLayoutManager(mLayoutManager);
         moviesRecycler.setItemAnimator(new DefaultItemAnimator());
         moviesRecycler.setAdapter(adapter);
@@ -175,7 +197,13 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         moviesRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), moviesRecycler, new RecyclerClickListener() {
             @Override
             public void onClick(View view, int position) {
-                startActivity(new Intent(getActivity(), DetailsActivity.class).putExtra(getString(R.string.movie_extra),moviesList.get(position)));
+                if (Screen.isTablet(getActivity())){
+                    communicator.sendMovie(moviesList.get(position));
+                }
+                else {
+                    startActivity(new Intent(getActivity(), DetailsActivity.class).putExtra(getString(R.string.movie_extra),moviesList.get(position)));
+                }
+
             }
 
             @Override
@@ -194,12 +222,21 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                     moviesList = (ArrayList<Movie>) moviesResponse.getResults();
                     adapter.updateMoviesList(moviesResponse.getResults());
                     hideView(progressBar);
+                    if (Screen.isTablet(getActivity())){
+                        sendFirstMovie(moviesList.get(FIRST_MOVIE));
+                    }
                 },throwable -> {
                     hideView(progressBar);
                     hideView(moviesRecycler);
                     showView(noInternetLayout);
                     ((TextView)noInternetLayout.findViewById(R.id.error_message)).setText(R.string.network_error);
                 });
+
+
+    }
+
+    private void sendFirstMovie(Movie movie) {
+        communicator.sendMovie(movie);
     }
 
 

@@ -13,6 +13,7 @@ import java.util.List;
 
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.model.Movie;
+import udacity.nanodegree.android.popularmovies.util.Screen;
 
 /**
  * Created by yehia on 19/12/16.
@@ -27,8 +28,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     public MoviesAdapter(List<Movie> moviesList, Context context) {
         this.moviesList = moviesList;
         this.mContext = context;
-        this.width = context.getResources().getDisplayMetrics().widthPixels;
-        this.height = context.getResources().getDisplayMetrics().heightPixels;
+
+        if (Screen.isTablet(mContext)){
+            this.width = context.getResources().getDisplayMetrics().widthPixels/5;
+            this.height = context.getResources().getDisplayMetrics().heightPixels/3;
+        }
+
+        else {
+            this.width = context.getResources().getDisplayMetrics().widthPixels/2;
+            this.height = context.getResources().getDisplayMetrics().heightPixels/2;
+        }
+
     }
 
 
@@ -51,7 +61,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         Movie movie = moviesList.get(position);
         Picasso.with(mContext)
                 .load(mContext.getString(R.string.base_image_url)+movie.getPosterPath())
-                .resize(width/2,height/2)
+                .resize(width,height)
                 .placeholder(R.drawable.progress_placeholder)
                 .error(R.drawable.error)
                 .into(holder.movieImage);
