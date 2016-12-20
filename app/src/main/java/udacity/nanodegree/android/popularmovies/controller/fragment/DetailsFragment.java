@@ -4,6 +4,7 @@ package udacity.nanodegree.android.popularmovies.controller.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     @Bind(R.id.favorite_fab) FloatingActionButton fab;
     @Bind(R.id.trailers_button) Button trailersButton;
     @Bind(R.id.reviews_button) Button reviewsButton;
+    @Bind(R.id.root_detail_layout) CoordinatorLayout rootLayout;
 
     private int movieID;
     private Movie mMovie;
@@ -61,7 +63,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         initializeContent();
 
         if (getActivity().getIntent() !=null){
-            populateDetails();
+            populateDetailsFromIntent();
         }
         return view;
     }
@@ -77,12 +79,14 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void populateDetails() {
-
-
+    private void populateDetailsFromIntent() {
 
         Movie movie = getActivity().getIntent().getExtras().getParcelable(getString(R.string.movie_extra));
         this.mMovie = movie;
+
+        if (databaseReference.isFavorite(movie.getId())){
+            fab.setImageResource(R.mipmap.marked);
+        }
 
         if (movie != null) {
             Picasso.with(getActivity()).load(getString(R.string.base_image_url)+movie.getBackdropPath())

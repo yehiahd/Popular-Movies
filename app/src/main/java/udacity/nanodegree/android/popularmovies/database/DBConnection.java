@@ -100,16 +100,6 @@ public class DBConnection extends SQLiteOpenHelper {
         return cnt;
     }
 
-
-    public boolean isMovieFound(String id){
-        String query = "SELECT * FROM "+TABLE_NAME+" WHERE id="+id;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query,null);
-        if (cursor.getCount()==0)
-            return false;
-        else return true;
-    }
-
     public boolean removeMovie(int id){
         String query = "DELETE FROM "+TABLE_NAME+" WHERE id="+id;
         SQLiteDatabase db = this.getWritableDatabase();

@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -31,6 +32,8 @@ import udacity.nanodegree.android.popularmovies.adapter.MoviesAdapter;
 import udacity.nanodegree.android.popularmovies.backend.ApiRequests;
 import udacity.nanodegree.android.popularmovies.callback.RecyclerClickListener;
 import udacity.nanodegree.android.popularmovies.controller.activity.DetailsActivity;
+import udacity.nanodegree.android.popularmovies.database.DBConnection;
+import udacity.nanodegree.android.popularmovies.database.DatabaseHelper;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 import udacity.nanodegree.android.popularmovies.util.Connection;
 import udacity.nanodegree.android.popularmovies.util.RecyclerTouchListener;
@@ -49,7 +52,10 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     private ArrayList<Movie> moviesList;
     private String oldPref;
     public static final int NUMBER_OF_ROW_ITEMS = 2;
-    private Bundle savedInstanceState;
+
+    private DBConnection databaseReference;
+    private SharedPreferences preferences ;
+    private String tempPref;
 
 
     public MainFragment() {
@@ -65,17 +71,18 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this,view);
         retryButton.setOnClickListener(this);
-        this.savedInstanceState = savedInstanceState;
+
+        getPref();
+
+        initializeContent();
 
 
-        if (!Connection.isNetworkAvailable(getActivity()) && savedInstanceState == null){
+        if ((!Connection.isNetworkAvailable(getActivity()) && savedInstanceState == null) && !tempPref.equals(getString(R.string.favorites))){
             showView(noInternetLayout);
             hideView(progressBar);
         }
 
         else {
-
-            initializeContent();
 
             if (savedInstanceState != null){
                 moviesList = savedInstanceState.getParcelableArrayList(getString(R.string.cashed_movies_list));
@@ -89,44 +96,73 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         return view;
     }
 
+    private void getPref() {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        RxSharedPreferences rxPreferences = RxSharedPreferences.create(preferences);
+
+        Preference<String> sortPreference = rxPreferences.getString(getString(R.string.sort_by_key),getString(R.string.top_rated));
+
+        sortPreference.asObservable()
+                .compose(bindToLifecycle())
+                .subscribe(s -> {
+                    tempPref = s;
+                },throwable -> {
+                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     @Override
     public void onResume() {
             super.onResume();
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
             RxSharedPreferences rxPreferences = RxSharedPreferences.create(preferences);
 
             Preference<String> sortPreference = rxPreferences.getString(getString(R.string.sort_by_key),getString(R.string.top_rated));
 
-        if (this.savedInstanceState == null){
+
 
             sortPreference.asObservable()
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .compose(bindToLifecycle())
                     .subscribe(s -> {
                         if (!s.equals(oldPref)){
-                            if (s.equals(getString(R.string.top_rated))){
+                            if (s.equals(getString(R.string.top_rated)) && Connection.isNetworkAvailable(getActivity())){
+                                fetchMovies(getString(R.string.top_rated));
                                 oldPref = getString(R.string.top_rated);
-
                             }
 
-                            else if (s.equals(getString(R.string.popular))){
+                            else if (s.equals(getString(R.string.popular)) && Connection.isNetworkAvailable(getActivity())){
+                                fetchMovies(getString(R.string.popular));
                                 oldPref = getString(R.string.popular);
 
                             }
-                            if (Connection.isNetworkAvailable(getActivity()))
-                                fetchMovies(oldPref);
+
+                            else if (s.equals(getString(R.string.favorites))){
+                                displayFavoriteMovies();
+                                oldPref = getString(R.string.favorites);
+                            }
+                        }
+
+                        else if (s.equals(getString(R.string.favorites))){
+                            if ((moviesList.size()!= databaseReference.getAllMovies().size())){
+                                displayFavoriteMovies();
+                            }
                         }
 
                     });
-        }
 
 
     }
+
 
     private void initializeContent() {
         hideView(noInternetLayout);
         showView(progressBar);
 
+        databaseReference = DatabaseHelper.getInstance(getActivity());
         moviesList = new ArrayList<>();
         adapter = new MoviesAdapter(moviesList,getActivity());
 
@@ -144,8 +180,8 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
 
             @Override
             public void onLongClick(View view, int position) {
-                moviesList.remove(position);
-                adapter.updateMoviesList(moviesList);
+//                moviesList.remove(position);
+//                adapter.updateMoviesList(moviesList);
             }
         }));
 
@@ -166,6 +202,13 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                 });
     }
 
+
+    private void displayFavoriteMovies() {
+        showView(progressBar);
+        moviesList = databaseReference.getAllMovies();
+        adapter.updateMoviesList(moviesList);
+        hideView(progressBar);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
