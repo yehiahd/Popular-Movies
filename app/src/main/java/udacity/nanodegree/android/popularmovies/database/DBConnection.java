@@ -110,14 +110,14 @@ public class DBConnection extends SQLiteOpenHelper {
         else return true;
     }
 
-    public boolean removeMovie(String id){
+    public boolean removeMovie(int id){
         String query = "DELETE FROM "+TABLE_NAME+" WHERE id="+id;
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(query);
         return true;
     }
 
-    public boolean isFavorite(String id){
+    public boolean isFavorite(int id){
         String query = "SELECT * FROM "+TABLE_NAME+" WHERE id="+id;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query,null);

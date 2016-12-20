@@ -8,14 +8,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,6 +21,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.controller.activity.MovieExtraActivity;
+import udacity.nanodegree.android.popularmovies.database.DBConnection;
 import udacity.nanodegree.android.popularmovies.database.DatabaseHelper;
 import udacity.nanodegree.android.popularmovies.model.Movie;
 
@@ -44,6 +43,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
 
     private int movieID;
     private Movie mMovie;
+    private DBConnection databaseReference;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -67,6 +67,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void initializeContent() {
+        databaseReference = DatabaseHelper.getInstance(getActivity());
         fab.setOnClickListener(this);
         trailersButton.setOnClickListener(this);
         reviewsButton.setOnClickListener(this);
@@ -110,9 +111,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.favorite_fab:
-                Toast.makeText(getActivity(), "fab Clicked ! Wait for favorites", Toast.LENGTH_SHORT).show();
-                long tmp=DatabaseHelper.getInstance(getActivity()).addMovie(mMovie);
-                Log.d("idInserted",tmp+"");
+                favoriteFabClicked();
                 break;
 
             case R.id.reviews_button:
@@ -128,6 +127,20 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
                 .putExtra(getString(R.string.request_type),getString(R.string.trailers))
                 );
                 break;
+        }
+    }
+
+    private void favoriteFabClicked() {
+
+        if (databaseReference.isFavorite(movieID)){
+            databaseReference.removeMovie(movieID);
+            fab.setImageResource(R.mipmap.not_marked);
+        }
+
+        else
+        {
+            databaseReference.addMovie(mMovie);
+            fab.setImageResource(R.mipmap.marked);
         }
     }
 }
