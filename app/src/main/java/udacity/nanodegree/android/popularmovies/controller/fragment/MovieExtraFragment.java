@@ -1,6 +1,8 @@
 package udacity.nanodegree.android.popularmovies.controller.fragment;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,13 +16,17 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import udacity.nanodegree.android.popularmovies.R;
 import udacity.nanodegree.android.popularmovies.adapter.MovieExtraAdapter;
 import udacity.nanodegree.android.popularmovies.backend.ApiRequests;
+import udacity.nanodegree.android.popularmovies.callback.RecyclerClickListener;
+import udacity.nanodegree.android.popularmovies.model.Trailer;
 import udacity.nanodegree.android.popularmovies.util.Connection;
+import udacity.nanodegree.android.popularmovies.util.RecyclerTouchListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +40,7 @@ public class MovieExtraFragment extends BaseFragment {
     private MovieExtraAdapter adapter;
     private int movieID;
     private String requestType;
-
+    private List<Trailer> trailerList;
     public MovieExtraFragment() {
         // Required empty public constructor
     }
@@ -76,6 +82,17 @@ public class MovieExtraFragment extends BaseFragment {
 
         else if (requestType.equals(getString(R.string.trailers))){
             getTrailers(movieID);
+            movieExtraRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), movieExtraRecycler, new RecyclerClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.base_trailer_url)+trailerList.get(position).getKey())));
+                }
+
+                @Override
+                public void onLongClick(View view, int position) {
+
+                }
+            }));
         }
 
     }
@@ -99,6 +116,7 @@ public class MovieExtraFragment extends BaseFragment {
         ApiRequests.getMovieTrailerObservable(getActivity(), String.valueOf(id))
                 .compose(bindToLifecycle())
                 .subscribe(trailerResponse -> {
+                    trailerList = trailerResponse.getTrailers();
                     adapter = new MovieExtraAdapter(getActivity(), new ArrayList<>(),trailerResponse.getTrailers(),getString(R.string.trailers));
                     movieExtraRecycler.setAdapter(adapter);
                     hideView(noInternetLayout);
