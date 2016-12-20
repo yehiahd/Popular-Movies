@@ -19,6 +19,10 @@ android {
         }
     }
 
+    buildTypes.each {
+        it.buildConfigField 'String', 'MOVIE_DB_API_KEY','"6ba7581f4330b87ceabc4ef8212ed72b"'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

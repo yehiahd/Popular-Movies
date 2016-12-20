@@ -1,13 +1,11 @@
 package udacity.nanodegree.android.popularmovies.backend;
 
-import android.content.Context;
-
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import udacity.nanodegree.android.popularmovies.R;
+import udacity.nanodegree.android.popularmovies.BuildConfig;
 import udacity.nanodegree.android.popularmovies.model.MoviesResponse;
 import udacity.nanodegree.android.popularmovies.model.ReviewResponse;
 import udacity.nanodegree.android.popularmovies.model.TrailerResponse;
@@ -20,28 +18,28 @@ import udacity.nanodegree.android.popularmovies.rest.ApiInterface;
 
 public class ApiRequests {
 
-    public static Observable<MoviesResponse> getMoviesObservable(Context context, String moviesSortType){
+    public static Observable<MoviesResponse> getMoviesObservable(String moviesSortType){
         return ApiClient.getClient()
                 .create(ApiInterface.class)
-                .getMovies(moviesSortType,context.getString(R.string.api_key))
+                .getMovies(moviesSortType, BuildConfig.MOVIE_DB_API_KEY)
                 .subscribeOn(Schedulers.newThread())
                 .timeout(15, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<ReviewResponse> getMovieReviewObservable(Context context, String movieId){
+    public static Observable<ReviewResponse> getMovieReviewObservable(String movieId){
         return ApiClient.getClient()
                 .create(ApiInterface.class)
-                .getMovieReview(movieId,context.getString(R.string.api_key))
+                .getMovieReview(movieId,BuildConfig.MOVIE_DB_API_KEY)
                 .subscribeOn(Schedulers.newThread())
                 .timeout(15,TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<TrailerResponse> getMovieTrailerObservable(Context context, String movieId){
+    public static Observable<TrailerResponse> getMovieTrailerObservable(String movieId){
         return ApiClient.getClient()
                 .create(ApiInterface.class)
-                .getMovieTrailer(movieId,context.getString(R.string.api_key))
+                .getMovieTrailer(movieId,BuildConfig.MOVIE_DB_API_KEY)
                 .subscribeOn(Schedulers.newThread())
                 .timeout(15,TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread());

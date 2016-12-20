@@ -147,7 +147,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void fetchMovies(String fetchType) {
-        ApiRequests.getMoviesObservable(getActivity(), fetchType)
+        ApiRequests.getMoviesObservable(fetchType)
                 .compose(bindToLifecycle())
                 .subscribe(moviesResponse -> {
                     moviesList = (ArrayList<Movie>) moviesResponse.getResults();

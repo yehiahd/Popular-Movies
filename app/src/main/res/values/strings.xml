@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Pop Movies</string>
 
-    <string name="api_key">6ba7581f4330b87ceabc4ef8212ed72b</string>
-
     <string name="top_rated_base_url">http://api.themoviedb.org/3/movie/top_rated?</string>
 
     <string name="most_popular_base_url">http://api.themoviedb.org/3/movie/popular?</string>
