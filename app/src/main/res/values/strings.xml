@@ -40,6 +40,7 @@
     <string name="request_type">requestType</string>
 
     <string name="id">id</string>
+    <string name="network_error">Network Error</string>
 
 
 </resources>

@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -49,6 +49,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     private ArrayList<Movie> moviesList;
     private String oldPref;
     public static final int NUMBER_OF_ROW_ITEMS = 2;
+    private Bundle savedInstanceState;
 
 
     public MainFragment() {
@@ -64,6 +65,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this,view);
         retryButton.setOnClickListener(this);
+        this.savedInstanceState = savedInstanceState;
 
 
         if (!Connection.isNetworkAvailable(getActivity()) && savedInstanceState == null){
@@ -72,13 +74,15 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         }
 
         else {
+
             initializeContent();
 
             if (savedInstanceState != null){
                 moviesList = savedInstanceState.getParcelableArrayList(getString(R.string.cashed_movies_list));
-
+                adapter.updateMoviesList(moviesList);
                 hideView(progressBar);
             }
+
         }
 
 
@@ -92,6 +96,8 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
             RxSharedPreferences rxPreferences = RxSharedPreferences.create(preferences);
 
             Preference<String> sortPreference = rxPreferences.getString(getString(R.string.sort_by_key),getString(R.string.top_rated));
+
+        if (this.savedInstanceState == null){
 
             sortPreference.asObservable()
                     .subscribeOn(Schedulers.newThread())
@@ -109,13 +115,11 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                             }
                             if (Connection.isNetworkAvailable(getActivity()))
                                 fetchMovies(oldPref);
-                            else {
-                                showView(noInternetLayout);
-                                hideView(moviesRecycler);
-                            }
                         }
 
                     });
+        }
+
 
     }
 
@@ -130,6 +134,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         moviesRecycler.setLayoutManager(mLayoutManager);
         moviesRecycler.setItemAnimator(new DefaultItemAnimator());
         moviesRecycler.setAdapter(adapter);
+        adapter.updateMoviesList(moviesList);
 
         moviesRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), moviesRecycler, new RecyclerClickListener() {
             @Override
@@ -154,10 +159,10 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                     adapter.updateMoviesList(moviesResponse.getResults());
                     hideView(progressBar);
                 },throwable -> {
-                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     hideView(progressBar);
                     hideView(moviesRecycler);
                     showView(noInternetLayout);
+                    ((TextView)noInternetLayout.findViewById(R.id.error_message)).setText(R.string.network_error);
                 });
     }
 
@@ -172,11 +177,23 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.retry_to_connect:
-                if (Connection.isNetworkAvailable(getActivity())){
-                    initializeContent();
+                if (moviesList == null){ // this check if the app is opened when no internet connection not error handing
+
+                    if (Connection.isNetworkAvailable(getActivity())){
+                        initializeContent();
+                        fetchMovies(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.sort_by_key),getString(R.string.top_rated)));
+                        showView(moviesRecycler);
+                    }
+                }
+
+                else {
                     fetchMovies(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.sort_by_key),getString(R.string.top_rated)));
                     showView(moviesRecycler);
+                    hideView(noInternetLayout);
+                    showView(progressBar);
                 }
+
+
                 break;
         }
     }

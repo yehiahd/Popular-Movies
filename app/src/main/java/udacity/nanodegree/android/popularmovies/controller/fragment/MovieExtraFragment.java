@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +52,8 @@ public class MovieExtraFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_movie_extra, container, false);
         ButterKnife.bind(this,view);
 
+        receiveIntents();
+
         if (!Connection.isNetworkAvailable(getActivity()) && savedInstanceState == null){
             showView(noInternetLayout);
             hideView(progressBar);
@@ -65,12 +66,20 @@ public class MovieExtraFragment extends BaseFragment {
         return view;
     }
 
+    private void receiveIntents() {
+        requestType = getActivity().getIntent().getExtras().getString(getString(R.string.request_type));
+        movieID = getActivity().getIntent().getExtras().getInt(getString(R.string.id));
+
+        if (requestType.equals(getString(R.string.reviews))) {
+            getActivity().setTitle(getString(R.string.reviews));
+        } else if (requestType.equals(getString(R.string.trailers))) {
+            getActivity().setTitle(getString(R.string.trailers));
+        }
+    }
+
     private void initializeContent() {
         hideView(noInternetLayout);
         showView(progressBar);
-
-        requestType = getActivity().getIntent().getExtras().getString(getString(R.string.request_type));
-        movieID = getActivity().getIntent().getExtras().getInt(getString(R.string.id));
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         movieExtraRecycler.setLayoutManager(mLayoutManager);
@@ -78,12 +87,10 @@ public class MovieExtraFragment extends BaseFragment {
 
         if (requestType.equals(getString(R.string.reviews))){
             getReviews(movieID);
-            getActivity().setTitle(getString(R.string.reviews));
         }
 
         else if (requestType.equals(getString(R.string.trailers))){
             getTrailers(movieID);
-            getActivity().setTitle(getString(R.string.reviews));
 
             movieExtraRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), movieExtraRecycler, new RecyclerClickListener() {
                 @Override
@@ -109,7 +116,6 @@ public class MovieExtraFragment extends BaseFragment {
                     hideView(noInternetLayout);
                     hideView(progressBar);
                 },throwable -> {
-                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     showView(noInternetLayout);
                     hideView(movieExtraRecycler);
                 });
@@ -125,7 +131,6 @@ public class MovieExtraFragment extends BaseFragment {
                     hideView(noInternetLayout);
                     hideView(progressBar);
                 },throwable -> {
-                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     showView(noInternetLayout);
                     hideView(movieExtraRecycler);
                 });
